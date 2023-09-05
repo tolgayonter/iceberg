@@ -1,14 +1,5 @@
 <script setup lang="ts">
-const config = useRuntimeConfig();
-
-const { data, pending, error } = useFetch(
-  () => `${config.public.apiBase}/Appointments`,
-  {
-    headers: {
-      Authorization: `Bearer ${config.apiSecret}`,
-    },
-  }
-);
+const { data, pending, error } = useFetch("/api/appointments");
 </script>
 
 <template>
