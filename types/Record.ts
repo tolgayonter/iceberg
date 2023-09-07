@@ -10,5 +10,5 @@ export type Record<T> = {
   id?: string;
   createdTime?: string;
   deleted?: boolean;
-  fields: T;
+  fields?: T;
 };

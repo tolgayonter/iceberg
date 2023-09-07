@@ -19,6 +19,7 @@
             prepend-icon="mdi-shape-rectangle-plus"
             title="Create Appointment"
             value="createAppointment"
+            to="/create-appointment"
           ></v-list-item>
         </v-list>
       </v-navigation-drawer>
