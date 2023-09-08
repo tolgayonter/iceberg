@@ -25,4 +25,5 @@ export default defineNuxtConfig({
     },
   },
   plugins: ["~/plugins/datepicker.js"],
+  modules: ["@pinia/nuxt"],
 });

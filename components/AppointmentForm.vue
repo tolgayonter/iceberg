@@ -3,8 +3,12 @@ import { Record } from "~/types/Record";
 import { Agent } from "~/types/Agent";
 import { Appointment } from "~/types/Appointment";
 import { Contact } from "~/types/Contact";
+import { useAppointmentStore } from "~/stores/appointmentStore";
 
-const appointmentPostcode = ref();
+const store = useAppointmentStore();
+
+const appointmentPostcode = computed(() => store.formattedPostcode);
+
 const appointmentDate = ref();
 const contactName = ref();
 const contactSurname = ref();
@@ -80,6 +84,7 @@ const resetValidation = () => {
         v-model="appointmentPostcode"
         :rules="rules"
         label="Appointment Postcode"
+        disabled
       ></v-text-field>
       <vue-datepicker
         v-model="appointmentDate"
