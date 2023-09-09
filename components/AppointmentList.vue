@@ -10,6 +10,13 @@ type Response = {
 const { data, pending, error } = useFetch<Response>("/api/appointments");
 
 const headers = ref([
+  { title: "Actions", key: "actions", sortable: false },
+  {
+    title: "Record Id",
+    align: "start",
+    sortable: false,
+    key: "id",
+  },
   {
     title: "Appointment Id",
     align: "start",
@@ -30,6 +37,12 @@ const headers = ref([
 
 const search = ref("");
 const filterKeys = ["agent_name", "agent_surname"];
+
+const router = useRouter();
+
+const editItem = (rawItem: any) => {
+  router.push(`/edit-appointment/${rawItem.id}`);
+};
 </script>
 
 <template>
@@ -48,12 +61,26 @@ const filterKeys = ["agent_name", "agent_surname"];
       </v-card-title>
       <v-data-table-virtual
         :headers="headers"
-        :items="data?.records.map((r) => r.fields)"
+        :items="
+          data?.records.map((r) => ({
+            id: r.id,
+            ...r.fields,
+          }))
+        "
         :search="search"
         :filter-keys="filterKeys"
         item-value="name"
         class="elevation-1"
-      />
+      >
+        <template v-slot:item.actions="{ item }">
+          <v-icon size="small" class="me-2" @click="editItem(item.raw)">
+            mdi-pencil
+          </v-icon>
+          <v-icon size="small" @click="deleteItem(item.raw)">
+            mdi-delete
+          </v-icon>
+        </template>
+      </v-data-table-virtual>
     </v-card>
   </div>
 </template>

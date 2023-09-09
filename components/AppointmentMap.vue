@@ -2,8 +2,6 @@
 import { Loader } from "@googlemaps/js-api-loader";
 import { useAppointmentStore } from "~/stores/appointmentStore";
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyDNfy8Txp3F5eOwRXX1Iu30QwQ7Zx4ZsF8";
-
 const getPostcodeResponse = await useFetch<{
   result: { latitude: number; longitude: number };
 }>("https://api.postcodes.io/postcodes/cm27pj");
@@ -27,12 +25,17 @@ watch(otherPos, async (v) => {
         2
       )}&lat=${v.lat.toFixed(2)}`
     );
-    store.setPostcode(data.value?.result ? data.value.result[0].postcode : "");
+
+    store.setPostcode(
+      data.value?.result
+        ? data.value.result[0].postcode.trim().replace(/\s+/g, "").toLowerCase()
+        : ""
+    );
   }
 });
 
 let map = ref<google.maps.Map>();
-const loader = new Loader({ apiKey: GOOGLE_MAPS_API_KEY });
+const loader = new Loader({ apiKey: useRuntimeConfig().public.mapsApiSecret });
 const mapDiv = ref<HTMLElement>();
 let clickListener = null;
 onMounted(async () => {
@@ -106,7 +109,7 @@ const distance = computed(() =>
     <h4>Distance</h4>
     {{ distance.toFixed(2) }} miles
     <h4>Nearest Postcode</h4>
-    {{ store.formattedPostcode || "nope" }}
+    {{ store.appointment_postcode || "nope" }}
     <div ref="mapDiv" style="width: 100%; height: 80vh" />
   </div>
 </template>

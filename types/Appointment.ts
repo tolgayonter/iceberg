@@ -1,5 +1,5 @@
 export type Appointment = {
-  appointment_id: number;
+  appointment_id?: number;
   appointment_date: string; // ISO 8601 formatted date
   appointment_postcode: string;
   contact_id: string[];

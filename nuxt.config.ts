@@ -22,6 +22,7 @@ export default defineNuxtConfig({
     apiSecret: "",
     public: {
       apiBase: "",
+      mapsApiSecret: "",
     },
   },
   plugins: ["~/plugins/datepicker.js"],
