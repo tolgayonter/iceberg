@@ -77,7 +77,7 @@ const deleteItem = async (id: string, index: number) => {
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
-        label="Search"
+        label="Search by Agent"
         single-line
         hide-details
       />

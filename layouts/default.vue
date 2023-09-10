@@ -2,7 +2,12 @@
   <v-app>
     <!-- TODO: Figure out this ssr, vuetify relation. -->
     <v-no-ssr>
-      <v-navigation-drawer class="bg-blue-grey-darken-4" expand-on-hover rail>
+      <v-navigation-drawer
+        class="bg-blue-grey-darken-4"
+        expand-on-hover
+        rail
+        permanent
+      >
         <v-list>
           <v-list-item
             prepend-avatar="https://randomuser.me/api/portraits/men/42.jpg"
