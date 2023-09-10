@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Loader } from "@googlemaps/js-api-loader";
 import { useAppointmentStore } from "~/stores/appointmentStore";
+import { formatPostcode } from "~/utils/dataFormatter";
 
 const getPostcodeResponse = await useFetch<{
   result: { latitude: number; longitude: number };
@@ -27,9 +28,7 @@ watch(otherPos, async (v) => {
     );
 
     store.setPostcode(
-      data.value?.result
-        ? data.value.result[0].postcode.trim().replace(/\s+/g, "").toLowerCase()
-        : ""
+      data.value?.result ? formatPostcode(data.value.result[0].postcode) : ""
     );
   }
 });

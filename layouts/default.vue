@@ -1,7 +1,8 @@
 <template>
-  <div>
-    <v-layout>
-      <v-navigation-drawer floating permanent>
+  <v-app>
+    <!-- TODO: Figure out this ssr, vuetify relation. -->
+    <v-no-ssr>
+      <v-navigation-drawer class="bg-deep-purple" floating permanent>
         <v-list nav>
           <v-list-item
             prepend-icon="mdi-view-dashboard"
@@ -28,6 +29,6 @@
       <v-main>
         <slot />
       </v-main>
-    </v-layout>
-  </div>
+    </v-no-ssr>
+  </v-app>
 </template>

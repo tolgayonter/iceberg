@@ -28,5 +28,12 @@ export const useAppointment = () => {
     });
   };
 
-  return { create, edit };
+  const delete_ = async (id: string) => {
+    await useFetch(`/api/appointments`, {
+      method: "DELETE",
+      query: { "records[]": id },
+    });
+  };
+
+  return { create, edit, delete_ };
 };
