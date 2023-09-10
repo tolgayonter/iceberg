@@ -32,17 +32,21 @@ watchEffect(() => {
       return `${name} ${surname} ${email} ${phone}`.trim();
     });
 
+    const status = new Date(date) > new Date();
+
     return {
       id: r.id,
       date,
       postcode,
       agents,
       contacts,
+      status,
     };
   });
 });
 
 const headers = ref([
+  { title: "Status", align: "center", key: "status" },
   { title: "Date", align: "start", key: "date" },
   { title: "Postcode", align: "start", key: "postcode" },
   { title: "Agent(s)", align: "start", key: "agents", sortable: false },
@@ -87,6 +91,14 @@ const deleteItem = async (id: string, index: number) => {
         :loading="pending"
         :sort-by="sortBy"
       >
+        <!-- status -->
+        <template #item.status="{ item }">
+          <v-icon v-if="item.columns.status" color="green" title="Active"
+            >mdi-record-circle</v-icon
+          >
+          <v-icon v-else color="red" title="Inactive">mdi-power-off</v-icon>
+        </template>
+
         <!-- date -->
         <template #item.date="{ item }">
           <span v-if="item.columns.date">{{
@@ -96,16 +108,32 @@ const deleteItem = async (id: string, index: number) => {
 
         <!-- agents -->
         <template #item.agents="{ item }">
-          <p v-for="agent in item.columns.agents">
-            <span v-if="agent">{{ agent }}</span>
-          </p>
+          <div v-for="agent in item.columns.agents" class="agent-wrapper">
+            <v-icon small color="blue-grey-darken-4" class="mr-1"
+              >mdi-account</v-icon
+            >
+            <span v-if="agent" class="agent-name">{{ agent }}</span>
+          </div>
         </template>
 
         <!-- contacts -->
         <template #item.contacts="{ item }">
-          <p v-for="contact in item.columns.contacts">
-            <span v-if="contact">{{ contact }}</span>
-          </p>
+          <div v-for="contact in item.columns.contacts" class="contact-wrapper">
+            <div v-if="contact">
+              <div class="contact-name">
+                <v-icon small color="blue-grey-darken-4" class="mr-1"
+                  >mdi-account</v-icon
+                >
+                {{ contact.split(" ")[0] }} {{ contact.split(" ")[1] }}
+              </div>
+              <div class="contact-details">
+                <v-icon small color="gray" class="mr-1">mdi-email</v-icon>
+                {{ contact.split(" ")[2] }}
+                <v-icon small color="gray" class="ml-2 mr-1">mdi-phone</v-icon>
+                {{ contact.split(" ")[3] }}
+              </div>
+            </div>
+          </div>
         </template>
 
         <!-- actions -->
@@ -134,5 +162,34 @@ const deleteItem = async (id: string, index: number) => {
 <style lang="scss">
 .table-container {
   width: 95%;
+}
+
+.agent-wrapper,
+.contact-wrapper {
+  margin-bottom: 8px;
+}
+
+.agent-name {
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.contact-name {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.9em;
+  margin-bottom: 4px;
+}
+
+.contact-details {
+  display: flex;
+  align-items: center;
+  font-size: 0.8em;
+  color: gray;
+}
+
+v-icon {
+  vertical-align: middle;
 }
 </style>
