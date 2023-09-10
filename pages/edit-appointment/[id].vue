@@ -51,11 +51,7 @@ const handleEdit = async () => {
 
 <template>
   <div>
-    <AppointmentForm :handle-submit="handleEdit">
-      <template #header>
-        <h1>Edit Appointment {{ $route.params.id }}</h1>
-      </template>
-    </AppointmentForm>
-    <AppointmentMap />
+    <v-app-bar :title="`Edit Appointment: ${route.params.id}`"></v-app-bar>
+    <AppointmentForm :handle-submit="handleEdit" />
   </div>
 </template>

@@ -1,57 +1,112 @@
 <script setup lang="ts">
+import { useField, useForm } from "vee-validate";
 import { useAppointmentStore } from "~/stores/appointmentStore";
 
 const store = useAppointmentStore();
 
-const name = ref();
-const surname = ref();
-const email = ref();
-const phone = ref();
+const { handleSubmit, handleReset } = useForm({
+  validationSchema: {
+    name(value: string) {
+      if (value?.length >= 1) return true;
+      return "Name needs to be at least 1 character.";
+    },
+    surname(value: string) {
+      if (value?.length >= 1) return true;
+      return "Surname needs to be at least 1 character.";
+    },
+    email(value: string) {
+      if (/^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)) return true;
+      return "Must be a valid e-mail.";
+    },
+    phone(value: string) {
+      if (value?.length > 9 && /[0-9-]+/.test(value)) return true;
+      return "Phone number needs to be at least 10 digits.";
+    },
+  },
+});
 
-const handleSubmit = () => {
+const name = useField("name");
+const surname = useField("surname");
+const email = useField("email");
+const phone = useField("phone");
+
+const submit = handleSubmit((values) => {
   store.addContact({
-    contact_name: name.value,
-    contact_surname: surname.value,
-    contact_email: email.value,
-    contact_phone: phone.value,
+    contact_name: values.name,
+    contact_surname: values.surname,
+    contact_email: values.email,
+    contact_phone: values.phone,
   });
-
   handleReset();
-};
-const handleReset = () => {
-  name.value = "";
-  surname.value = "";
-  email.value = "";
-  phone.value = "";
-};
+});
 </script>
 
 <template>
-  <form @submit.prevent="handleSubmit">
-    <v-text-field v-model="name" label="Name"></v-text-field>
-    <v-text-field v-model="surname" label="Surname"></v-text-field>
-    <v-text-field v-model="email" label="Email"></v-text-field>
-    <v-text-field v-model="phone" label="Phone"></v-text-field>
-    <v-btn class="me-4" type="submit"> Add </v-btn>
-    <v-btn @click="handleReset"> Clear </v-btn>
-  </form>
+  <v-card class="contact-card">
+    <v-card-title class="mb-5">Add Contact(s)</v-card-title>
+    <v-card-text>
+      <form @submit.prevent="submit">
+        <v-row class="text-fields-row">
+          <v-col class="field-col" cols="3">
+            <v-text-field
+              v-model="name.value.value"
+              label="Name"
+              counter
+              :error-messages="name.errorMessage.value"
+            ></v-text-field>
+          </v-col>
+          <v-col class="field-col" cols="3">
+            <v-text-field
+              v-model="surname.value.value"
+              label="Surname"
+              counter
+              :error-messages="surname.errorMessage.value"
+            ></v-text-field>
+          </v-col>
+          <v-col class="field-col" cols="3">
+            <v-text-field
+              v-model="email.value.value"
+              label="Email"
+              :error-messages="email.errorMessage.value"
+            ></v-text-field>
+          </v-col>
+          <v-col class="field-col" cols="3">
+            <v-text-field
+              v-model="phone.value.value"
+              label="Phone"
+              :counter="10"
+              :error-messages="phone.errorMessage.value"
+            ></v-text-field>
+          </v-col>
+        </v-row>
 
-  <v-table>
-    <thead>
-      <tr>
-        <th class="text-left">Name</th>
-        <th class="text-left">Surname</th>
-        <th class="text-left">Email</th>
-        <th class="text-left">Phone</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(item, index) in store.contact_name" :key="`contact-${index}`">
-        <td>{{ store.contact_name[index] }}</td>
-        <td>{{ store.contact_surname[index] }}</td>
-        <td>{{ store.contact_email[index] }}</td>
-        <td>{{ store.contact_phone[index] }}</td>
-      </tr>
-    </tbody>
-  </v-table>
+        <v-row justify="end" class="action-buttons">
+          <v-btn type="submit" class="bg-green">
+            <v-icon left>mdi-plus</v-icon>
+            Add
+          </v-btn>
+          <v-btn class="me-4" @click="handleReset">
+            <v-icon left>mdi-delete</v-icon>
+            Clear
+          </v-btn>
+        </v-row>
+      </form>
+
+      <ContactTable />
+    </v-card-text>
+  </v-card>
 </template>
+
+<style scoped>
+.contact-card {
+  padding: 20px;
+}
+
+.field-col {
+  padding: 0;
+}
+
+.action-buttons {
+  gap: 20px;
+}
+</style>

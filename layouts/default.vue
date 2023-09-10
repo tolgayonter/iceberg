@@ -2,11 +2,21 @@
   <v-app>
     <!-- TODO: Figure out this ssr, vuetify relation. -->
     <v-no-ssr>
-      <v-navigation-drawer class="bg-deep-purple" floating permanent>
-        <v-list nav>
+      <v-navigation-drawer class="bg-blue-grey-darken-4" expand-on-hover rail>
+        <v-list>
+          <v-list-item
+            prepend-avatar="https://randomuser.me/api/portraits/men/42.jpg"
+            title="Admin"
+          ></v-list-item>
+        </v-list>
+
+        <v-divider></v-divider>
+
+        <v-list nav density="compact">
           <v-list-item
             prepend-icon="mdi-view-dashboard"
             title="Home"
+            subtitle="This is your Dashboard"
             value="home"
             to="/"
           ></v-list-item>

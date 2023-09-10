@@ -11,15 +11,18 @@
   "devDependencies": {
     "@nuxt/devtools": "latest",
     "@types/google.maps": "^3.54.0",
-    "nuxt": "^3.7.0"
+    "nuxt": "^3.7.0",
+    "sass-loader": "^13.3.2"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.2",
     "@mdi/font": "^7.2.96",
     "@pinia/nuxt": "^0.4.11",
+    "@vee-validate/nuxt": "^4.11.6",
     "@vuepic/vue-datepicker": "^6.0.3",
     "pinia": "^2.1.6",
     "sass": "^1.66.1",
+    "vee-validate": "^4.11.6",
     "vuetify": "^3.4.0-alpha.1"
   }
 }

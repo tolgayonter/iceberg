@@ -69,18 +69,14 @@ const deleteItem = async (id: string, index: number) => {
 
 <template>
   <div>
-    <v-card>
-      <v-card-title>
-        Appointments
-        <v-spacer />
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        />
-      </v-card-title>
+    <v-container class="table-container pa-0 mt-5">
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        hide-details
+      />
 
       <!-- @vue-ignore -->
       <v-data-table-virtual
@@ -131,6 +127,12 @@ const deleteItem = async (id: string, index: number) => {
           </v-icon>
         </template>
       </v-data-table-virtual>
-    </v-card>
+    </v-container>
   </div>
 </template>
+
+<style lang="scss">
+.table-container {
+  width: 95%;
+}
+</style>

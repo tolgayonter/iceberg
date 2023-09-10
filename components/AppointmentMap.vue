@@ -1,32 +1,25 @@
 <script setup lang="ts">
 import { Loader } from "@googlemaps/js-api-loader";
 import { useAppointmentStore } from "~/stores/appointmentStore";
-import { formatPostcode } from "~/utils/dataFormatter";
-
-const getPostcodeResponse = await useFetch<{
-  result: { latitude: number; longitude: number };
-}>("https://api.postcodes.io/postcodes/cm27pj");
-
-// FIXME: Better structure this? LatLngLiteral?
-const currPos = computed(() => ({
-  lat: getPostcodeResponse.data.value?.result.latitude,
-  lng: getPostcodeResponse.data.value?.result.longitude,
-}));
-
-const otherPos = ref(null);
+import { useMapStore } from "~/stores/mapStore";
+import { Position } from "~/types/Position";
 
 const store = useAppointmentStore();
+const mapStore = useMapStore();
 
-watch(otherPos, async (v) => {
-  if (v) {
+await mapStore.fetchPostcodeResponse();
+
+const target = ref<Position | null>(null);
+
+watchEffect(async () => {
+  if (target.value) {
     const { data } = await useFetch<{
       result: { postcode: string }[];
     }>(
-      `https://api.postcodes.io/postcodes?lon=${v.lng.toFixed(
+      `https://api.postcodes.io/postcodes?lon=${target.value.lng.toFixed(
         2
-      )}&lat=${v.lat.toFixed(2)}`
+      )}&lat=${target.value.lat.toFixed(2)}`
     );
-
     store.setPostcode(
       data.value?.result ? formatPostcode(data.value.result[0].postcode) : ""
     );
@@ -36,79 +29,48 @@ watch(otherPos, async (v) => {
 let map = ref<google.maps.Map>();
 const loader = new Loader({ apiKey: useRuntimeConfig().public.mapsApiSecret });
 const mapDiv = ref<HTMLElement>();
-let clickListener = null;
+let clickListener: any = null;
 onMounted(async () => {
   await loader.load();
   const { Map } = (await google.maps.importLibrary(
     "maps"
   )) as google.maps.MapsLibrary;
   map.value = new Map(mapDiv.value as HTMLElement, {
-    center: currPos.value,
+    center: mapStore.currPos,
     zoom: 8,
   });
   clickListener = map.value.addListener(
     "click",
-    ({ latLng: { lat, lng } }) => (otherPos.value = { lat: lat(), lng: lng() })
+    ({ latLng: { lat, lng } }: { latLng: { lat: any; lng: any } }) =>
+      (target.value = { lat: lat(), lng: lng() })
   );
 });
 
 onUnmounted(async () => {
   if (clickListener) clickListener.remove();
+  mapStore.reset();
 });
 
-let line = null;
-watch([map, currPos, otherPos], () => {
+let line: any = null;
+watchEffect(() => {
   if (line) line.setMap(null);
-  if (map.value && otherPos.value != null) {
+  if (map.value && target.value && mapStore.currPos !== null) {
     line = new google.maps.Polyline({
-      path: [currPos.value, otherPos.value],
+      path: [mapStore.currPos, target.value],
       map: map.value,
     });
   }
 });
 
-const haversineDistance = (pos1, pos2) => {
-  const R = 3958.8; // Radius of the Earth in miles
-  const rlat1 = pos1.lat * (Math.PI / 180); // Convert degrees to radians
-  const rlat2 = pos2.lat * (Math.PI / 180); // Convert degrees to radians
-  const difflat = rlat2 - rlat1; // Radian difference (latitudes)
-  const difflon = (pos2.lng - pos1.lng) * (Math.PI / 180); // Radian difference (longitudes)
-
-  const d =
-    2 *
-    R *
-    Math.asin(
-      Math.sqrt(
-        Math.sin(difflat / 2) * Math.sin(difflat / 2) +
-          Math.cos(rlat1) *
-            Math.cos(rlat2) *
-            Math.sin(difflon / 2) *
-            Math.sin(difflon / 2)
-      )
-    );
-  return d;
-};
-
-const distance = computed(() =>
-  otherPos.value === null ? 0 : haversineDistance(currPos.value, otherPos.value)
-);
+watchEffect(() => {
+  if (store.appointment_postcode && mapStore.currPos && target.value) {
+    mapStore.calculateDistance(target.value);
+  }
+});
 </script>
 
 <template>
   <div class="text-center mx-auto">
-    <h4>Your Position</h4>
-    Latitude: {{ currPos.lat.toFixed(2) }}, Longitude:
-    {{ currPos.lng.toFixed(2) }}
-    <h4>Clicked Position</h4>
-    <span v-if="otherPos"
-      >Latitude: {{ otherPos.lat.toFixed(2) }}, Longitude:
-      {{ otherPos.lng.toFixed(2) }}</span
-    >
-    <span v-else>Click the map to select position.</span>
-    <h4>Distance</h4>
-    {{ distance.toFixed(2) }} miles
-    <h4>Nearest Postcode</h4>
-    {{ store.appointment_postcode || "nope" }}
-    <div ref="mapDiv" style="width: 100%; height: 80vh" />
+    <div ref="mapDiv" style="width: 100%; height: 61vh" />
   </div>
 </template>

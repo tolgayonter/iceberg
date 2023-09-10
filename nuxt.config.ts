@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   css: [
     "vuetify/lib/styles/main.sass",
     "@mdi/font/css/materialdesignicons.min.css",
+    "~/assets/styles/main.scss",
   ],
   build: {
     transpile: ["vuetify", "@vuepic/vue-datepicker"],
@@ -10,6 +11,13 @@ export default defineNuxtConfig({
   vite: {
     define: {
       "process.env.DEBUG": false,
+    },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: '@use "@/assets/styles/_variables.scss" as *;',
+        },
+      },
     },
   },
   runtimeConfig: {
@@ -20,5 +28,5 @@ export default defineNuxtConfig({
     },
   },
   plugins: ["~/plugins/datepicker.js"],
-  modules: ["@pinia/nuxt"],
+  modules: ["@pinia/nuxt", "@vee-validate/nuxt"],
 });

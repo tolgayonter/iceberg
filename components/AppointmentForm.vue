@@ -5,24 +5,16 @@ import { useAppointmentStore } from "~/stores/appointmentStore";
 
 const store = useAppointmentStore();
 
-const rules = [
-  (value: string) => {
-    if (value) return true;
-    return "You must enter a value.";
-  },
-];
-
-// turn into composable
-const { data: agentsData } = useFetch<{ records: Record<Agent>[] }>(
-  "/api/agents"
-);
-
-const props = defineProps({
+defineProps({
   handleSubmit: {
     type: Function,
     required: true,
   },
 });
+
+const { data: agentsData } = useFetch<{ records: Record<Agent>[] }>(
+  "/api/agents"
+);
 
 onUnmounted(() => {
   store.reset();
@@ -30,48 +22,57 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <v-container>
-    <v-row>
-      <v-col cols="5">
-        <v-sheet class="text-center">
-          <slot name="header">
-            <h1>Create New Appointment</h1>
-          </slot>
-
-          <!-- FIXME: Fix the type error on @submit -->
-          <v-form @submit.prevent="handleSubmit">
-            <v-text-field
-              v-model="store.appointment_postcode"
-              :rules="rules"
-              label="Appointment Postcode"
-              disabled
-            ></v-text-field>
-            <vue-datepicker
-              v-model="store.appointment_date"
-              label="Appointment Date"
-              class="mb-5"
-            ></vue-datepicker>
-
-            <ContactForm />
+  <div>
+    <v-container fluid class="form-container pa-0 mt-5">
+      <!-- @vue-ignore -->
+      <v-form @submit.prevent="handleSubmit">
+        <v-row>
+          <v-col cols="12" md="4">
+            <DateAddressPicker />
 
             <v-select
               v-model="store.agent_id"
               :items="agentsData?.records"
               :item-title="`fields.agent_name`"
               :item-value="`id`"
-              label="Agent"
+              label="Select Agent(s)"
               multiple
-            >
-            </v-select>
+              class="mt-5"
+            ></v-select>
+          </v-col>
 
-            <v-btn type="submit" block class="mt-2">Submit</v-btn>
-          </v-form>
-        </v-sheet>
-      </v-col>
-      <v-col>
-        <h1>Store Data</h1>
-        <pre>{{ store }}</pre>
-      </v-col>
-    </v-row>
-  </v-container>
+          <v-col cols="12" md="8">
+            <AppointmentMap />
+          </v-col>
+        </v-row>
+
+        <ContactForm class="mt-5" />
+
+        <v-row class="fixed-submit">
+          <v-col class="text-center">
+            <v-btn type="submit" class="bg-green">Submit</v-btn>
+          </v-col>
+        </v-row>
+      </v-form>
+    </v-container>
+  </div>
 </template>
+
+<style lang="scss" scoped>
+.form-container {
+  height: 100%;
+  width: 95%;
+  margin-bottom: $footerHeight;
+}
+
+.fixed-submit {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: $drawerWidth;
+  height: $footerHeight;
+  align-items: center;
+  background-color: #fff; /* adjust to match your design */
+  box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1); /* subtle shadow for depth */
+}
+</style>

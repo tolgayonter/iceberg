@@ -14,7 +14,6 @@ export const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString("en-GB", dateOptions);
 };
 
-export const formatPostcode = (postcode: string | undefined) => {
-  if (!postcode) return;
+export const formatPostcode = (postcode: string) => {
   return postcode.trim().replace(/\s+/g, "").toLowerCase();
 };

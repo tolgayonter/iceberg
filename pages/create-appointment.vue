@@ -39,7 +39,7 @@ const handleCreate = async () => {
 
 <template>
   <div>
+    <v-app-bar title="Create New Appointment"></v-app-bar>
     <AppointmentForm :handle-submit="handleCreate" />
-    <AppointmentMap />
   </div>
 </template>
